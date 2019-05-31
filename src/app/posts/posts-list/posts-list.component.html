@@ -1,0 +1,15 @@
+<div class="spinner-border" style="display:block; margin: 0 auto" role="status" *ngIf="isLoading">
+    <span class="sr-only">Loading...</span>
+  </div>
+<div *ngIf="!isLoading">
+  <div class="card bg-light mb-3" style="max-width: 100%;" *ngFor="let post of posts; let i = index">
+  <div class="card-body">
+    <h5 class="card-title">{{ post.title }}</h5>
+    <p class="card-text">{{ post.description }}</p>
+  </div>
+  <div class="card-footer">
+    <button class="btn btn-success" (click)="onEdit(i)">Edit</button>&nbsp;
+    <button class="btn btn-danger" (click)="onDelete(i)">Delete</button>
+  </div>
+</div>
+</div>

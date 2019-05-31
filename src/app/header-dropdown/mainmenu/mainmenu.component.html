@@ -1,0 +1,14 @@
+<button mat-button [matMenuTriggerFor]="animals">Menu</button>
+
+<mat-menu #animals="matMenu">
+  <div *ngFor="let location of locations; let i=index">
+      <button mat-menu-item [matMenuTriggerFor]="submenu">{{location.name}}</button>
+      <mat-menu #submenu="matMenu">
+          <div *ngIf="locations">
+            <button mat-menu-item *ngFor="let branch of locations[i].branches">{{branch.name}}</button>
+          </div>
+        </mat-menu>
+  </div>
+</mat-menu>
+
+
