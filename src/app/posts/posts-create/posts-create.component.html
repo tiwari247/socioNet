@@ -2,17 +2,33 @@
         <span class="sr-only">Loading...</span>
 </div>
 <div class="card bg-light mb-3" style="max-width: 100%;" *ngIf="!isLoading">
-    <form (submit)="onCreate(f)" #f="ngForm">
+    <form (submit)="onCreate()" [formGroup]="form">
         <div class="row">
                 <div class="col">
                     <div class="card-body">
                         <div class="form-group">
-                                <input name="title" type="text" placeholder="title" class="form-control" #title="ngModel" required minlength="3" [ngModel]="post.title">
-                                <span *ngIf="title.invalid && title.touched"><small>Mandatory & must be atleast 3 chars long</small></span>
-                        </div>    
+                                <input name="title" type="text" 
+                                placeholder="title" 
+                                class="form-control" 
+                                formControlName="title">
+                                <!-- <span *ngIf="title.invalid && title.touched"><small>Mandatory & must be atleast 3 chars long</small></span> -->
+                        </div> 
+                        <div>
+                            <button class="btn btn-success" type="button" (click)="imgInput.click()">Upload Image</button>
+                            <input type="file" #imgInput (change)="onImagePicked($event)">
+                        </div>
+                        <div *ngIf="imagePreview" class="form-image">
+                            <img [src]="imagePreview" [alt]="post.title" >
+                        </div>
+                        <br>
                         <div class="form-group">
-                            <textarea name="description" rows="6" placeholder="description" class="form-control" #desc="ngModel" required  [ngModel]="post.description"></textarea>
-                            <span *ngIf="desc.invalid && desc.touched"><small>Mandatory Field</small></span>
+                            <textarea name="description" 
+                            rows="6" 
+                            placeholder="description" 
+                            class="form-control" 
+                            formControlName="description"
+                            ></textarea>
+                            <!-- <span *ngIf="desc.invalid && desc.touched"><small>Mandatory Field</small></span> -->
                         </div>
                     </div>
                     <div class="card-footer">

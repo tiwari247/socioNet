@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Post } from "../post.model"
 import { PostService } from '../post.service';
-import { NgForm } from '@angular/forms';
+import { NgForm, FormControlName, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { formArrayNameProvider } from '@angular/forms/src/directives/reactive_directives/form_group_name';
 
@@ -15,31 +15,31 @@ export class PostsCreateComponent implements OnInit{
     mode = "create";
     postId;
     isLoading = true;
-    @ViewChild('f') form: NgForm;
+    imagePreview;
 
     constructor(private postService: PostService, 
         private activatedRoute: ActivatedRoute,
         private router: Router){}
+        private form: FormGroup;
 
     ngOnInit(){
+        this.form = new FormGroup({
+            title: new FormControl(null, {validators: [Validators.required]}),
+            description: new FormControl(null, {validators: [Validators.required]})
+        });
         this.activatedRoute.paramMap.subscribe((paramsMap: ParamMap)=>{
-            // this.isLoading = true;
             if(paramsMap.has("id")){
                 this.mode = "edit";
                 this.postId = paramsMap.get("id");
                 console.log(this.mode + "-" + this.postId);
                 this.post = this.postService.getPost(+this.postId);
-                // setTimeout(()=>{}, 3000);
-                // setTimeout(()=>{
-                //     this.form.setValue({
-                //         title: post.title,
-                //         description: post.description
-                //     });    
-                // }, 0);
+                this.form.setValue({
+                    title: this.form.get('title').value,
+                    description: this.form.get('description').value
+                });
                 this.isLoading = false;
             }else{
                 this.post = new Post("","","");
-                
                 this.mode = "create";
                 console.log(this.mode);
                 this.isLoading = false;
@@ -47,21 +47,34 @@ export class PostsCreateComponent implements OnInit{
         });
     }
 
-    onCreate(form: NgForm){
-        if(form.invalid){
-            return;
-        }
+    onCreate(){
         this.isLoading = true;
         if(this.mode === "create"){    
-            this.post = new Post(null, form.value.title, form.value.description); 
+            this.post = new Post(null, this.form.value.title, this.form.value.description); 
             console.log(this.post);
             this.postService.addPosts(this.post);
             this.isLoading = false;
         }else{
-            this.post = new Post(null, form.value.title, form.value.description); 
+            this.post = new Post(null, this.form.value.title, this.form.value.description); 
             this.postService.updatePost(this.postId, this.post);
             this.isLoading = false;
         }
-        form.reset();
+        this.form.reset();
+    }
+
+    onImagePicked(event: Event){
+        const file = (event.target as HTMLInputElement).files[0];
+        console.log(file);
+
+        const reader = new FileReader();
+
+        reader.onload = ()=>{
+            this.imagePreview = reader.result;
+            console.log(this.imagePreview);
+        };
+
+        reader.readAsDataURL(file);
+
+        
     }
 }

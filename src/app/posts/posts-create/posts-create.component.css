@@ -1,3 +1,15 @@
 span{
     color: red;
 }
+
+input[type="file"]{
+    visibility: hidden;
+}
+
+.form-image{
+    width: 400px;
+}
+
+.form-image img{
+    width: 100%;
+}
