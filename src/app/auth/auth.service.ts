@@ -3,17 +3,19 @@ import { HttpClient } from '@angular/common/http';
 import { User } from './user.model';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { MAT_AUTOCOMPLETE_DEFAULT_OPTIONS_FACTORY } from '@angular/material';
 
 @Injectable()
 export class AuthService{
-    // token;
+    token;
+    timer:any;
     constructor(private http: HttpClient, private router:Router){}
 
     private authStatusChanged = new Subject<boolean>();
 
     getToken(){
         // return this.token;
-        console.log(localStorage.getItem("token"));
+        // console.log(localStorage.getItem("token"));
         return localStorage.getItem("token");
     }
 
@@ -23,15 +25,15 @@ export class AuthService{
 
     isAuthenticated(){
         // return this.token?true:false ;
-        console.log(localStorage.getItem("token")?true:false);
+        // console.log(localStorage.getItem("token")?true:false);
         return localStorage.getItem("token")?true:false ;
     }
 
     logout(){
-        // this.token = null;
-        localStorage.removeItem("token");
-        localStorage.removeItem("expiresIn");
+        this.token = null;
+        this.clearAuthData();
         this.authStatusChanged.next(false);
+        clearTimeout(this.timer);
     }
 
     login(email:string, password:string){
@@ -39,16 +41,13 @@ export class AuthService{
         this.http.post<{message:string, user: User, token:string, expiresIn:number}>("http://localhost:3000/api/users/login", {email, password})
             .subscribe((response)=>{
                 console.log(response);
-                // this.token = response.token;
+                this.token = response.token;
                 // console.log(this.token);
                 let expiresIn = response.expiresIn;
-                localStorage.setItem("token", response.token);
                 let now = new Date();
                 let expirationDate = new Date(now.getTime() + expiresIn * 1000);
-                localStorage.setItem("expiresIn", expirationDate.toISOString());
-                setTimeout(()=>{
-                    this.logout();
-                }, expiresIn * 1000);
+                this.setAuthData(response.token, expirationDate);
+                this.setAuthTimer(expiresIn);               
                 this.authStatusChanged.next(true);
                 this.router.navigate(['/']);
             });
@@ -61,4 +60,50 @@ export class AuthService{
                 console.log(response);
             });
     }
+
+    autoAuthUser(){
+        const authInfo = this.getAuthData();
+        if(!authInfo){
+            return this.logout();;
+        }
+        const now = new Date();
+        const difference = authInfo.expiresIn.getTime() - now.getTime();
+        if(difference>0){
+            this.token = authInfo.token;
+            // this.isAuthenticated = true;
+            this.authStatusChanged.next(true);
+            this.setAuthTimer(difference);
+        }
+    }
+
+    private setAuthTimer(duration:number){
+        this.timer = setTimeout(()=>{
+            this.logout();
+        }, duration * 1000 );
+    }
+
+    private setAuthData(token:string, expirationDate:Date){
+        localStorage.setItem("expiresIn", expirationDate.toISOString());
+        localStorage.setItem("token", token);
+    }
+
+    private clearAuthData(){
+        localStorage.removeItem("token");
+        localStorage.removeItem("expiresIn");
+    }
+
+    private getAuthData(){
+        const token = localStorage.getItem("token");
+        const expiresIn = localStorage.getItem("expiresIn");
+
+        if(!token||!expiresIn){
+            return;
+        }
+
+        return {
+            token: token,
+            expiresIn: new Date(expiresIn)
+        };
+    }
+
 }
