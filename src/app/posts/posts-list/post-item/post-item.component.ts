@@ -24,6 +24,7 @@ export class PostItemComponent implements OnInit, OnDestroy {
     private authService:AuthService) { }
 
   ngOnInit() {
+    console.log("PostItem-isAuth: "+this.authService.isAuthenticated())
     this.isAuthenticated =  this.authService.isAuthenticated();
     this.subscription = this.authService.getAuthStatusChanged()
       .subscribe((isAuth)=>{

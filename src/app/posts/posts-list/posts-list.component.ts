@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Post } from '../post.model';
 import { PostService } from '../post.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'app-posts-list',
@@ -15,11 +16,13 @@ export class PostsListComponent implements OnInit {
   postLength:number;
   resultsPerPage=4;
   currentPage = 1;
-  constructor(private postService:PostService, private router:Router) { }
+  constructor(private postService:PostService, private router:Router,
+    private authService:AuthService) { }
 
   ngOnInit() {
     // this.posts = 
     // console.log("post list initialized");
+    // this.authService.autoAuthUser();
     this.postService.getPosts(this.resultsPerPage,this.currentPage);
 
     this.postService.postsChanged.subscribe((postData)=>{

@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const {Post} = require("../models/Post");
 const multer = require("multer");
+const auth = require("../middleware/auth");
 
 const MIME_TYPE = {
     "image/jpg": "jpg",
@@ -49,15 +50,16 @@ router.get("/", async(req, res)=>{
 });
 
 
-
-router.post("/", multer({storage: storage}).single("image") ,async(req, res)=>{
+router.post("",)
+router.post("/", auth, multer({storage: storage}).single("image") ,async(req, res)=>{
     
     let url = req.protocol + "://" + req.get("host");
 
     let post = new Post({
         title: req.body.title,
         description: req.body.description,
-        imgPath: url + "/images/" + req.file.filename
+        imgPath: url + "/images/" + req.file.filename,
+        creater: req.body.userId
     });
     try{
         await post.save();
@@ -70,7 +72,7 @@ router.post("/", multer({storage: storage}).single("image") ,async(req, res)=>{
     }
 });
 
-router.delete("/:id", async(req, res)=>{
+router.delete("/:id", auth, async(req, res)=>{
     
     let id = req.params.id;
     console.log(id);
@@ -87,7 +89,7 @@ router.delete("/:id", async(req, res)=>{
 });
 
 
-router.put("/:id", multer({storage: storage}).single("image"), async(req, res)=>{
+router.put("/:id", auth, multer({storage: storage}).single("image"), async(req, res)=>{
     
     let imgPath = req.body.imgPath;
     let url = req.protocol + "://" + req.get("host");

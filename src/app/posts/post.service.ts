@@ -1,6 +1,6 @@
 import { Post } from './post.model';
 import { Subject } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { map } from "rxjs/operators";
@@ -22,7 +22,7 @@ export class PostService{
 
     getPosts(postsPerPage, currentPage){
         let queryParams = `?resultsPerPage=${postsPerPage}&page=${currentPage}`;
-        console.log("Inside getPosts()");
+        // console.log("Inside getPosts()");
         this.http.get<{message: string, posts: any, maxPosts: number}>("http://localhost:3000/api/posts"+queryParams)
             .pipe(map((postsData)=>{
                 return {
@@ -38,10 +38,10 @@ export class PostService{
                 };
             }))
             .subscribe((tranformedPostData)=>{
-                console.log("Inside getPosts() http");
+                // console.log("Inside getPosts() http");
                 this.posts = tranformedPostData.posts;
                 this.postsChanged.next({posts: this.posts.slice(), postsLength: +tranformedPostData.maxPosts});
-                console.dir(this.posts);
+                // console.dir(this.posts);
             });
         // return this.posts.slice();
     }
@@ -51,12 +51,15 @@ export class PostService{
         formData.append("title", post.title);
         formData.append("description", post.description);
         formData.append("image", file, post.title);
-        this.http.post<{message:string, post: Post}>("http://localhost:3000/api/posts", formData)
+        this.http.post<{message:string, post: Post}>("http://localhost:3000/api/posts", formData, {
+            headers: new HttpHeaders().append("auth", localStorage.getItem("token"))
+        })
             .subscribe((response)=>{
                 // this.posts.push(post);
                 // this.postsChanged.next(this.posts.slice());
+                // console.log("Response: "+response);
                 this.router.navigate(["/"]);
-            });
+            }, (err)=>{console.log(err)});
     }
 
     removePost(index: number){

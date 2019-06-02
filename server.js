@@ -15,7 +15,7 @@ mongoose.connect("mongodb://localhost/socioNet")
 app.use('/images',express.static(__dirname + "/backend/images"));
 app.use((req, res, next)=>{
     res.header('Access-Control-Allow-Origin', "*");
-    res.header('Access-Control-Allow-Headers', "Content-Type, Accept, Origin, X-Requested-With");
+    res.header('Access-Control-Allow-Headers', "Content-Type, Accept, Origin, X-Requested-With, auth");
     res.header('Access-Control-Allow-Methods', "GET, POST, PUT, DELETE");
     next();
 });

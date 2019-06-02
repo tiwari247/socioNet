@@ -25,7 +25,7 @@ export class AuthService{
 
     isAuthenticated(){
         // return this.token?true:false ;
-        // console.log(localStorage.getItem("token")?true:false);
+        console.log("isAuthenticated:AuthService: "+localStorage.getItem("token")?true:false);
         return localStorage.getItem("token")?true:false ;
     }
 
@@ -63,17 +63,22 @@ export class AuthService{
 
     autoAuthUser(){
         const authInfo = this.getAuthData();
-        if(!authInfo){
-            return this.logout();;
+        console.log(authInfo);
+        if(authInfo){
+            const now = new Date();
+            const difference = authInfo.expiresIn.getTime() - now.getTime();
+            console.log(difference);
+            if(difference>0){
+                this.token = authInfo.token;
+                // this.isAuthenticated = true;
+    
+                this.authStatusChanged.next(true);
+                this.setAuthTimer(difference);
+            }
+        }else{
+            this.logout();
         }
-        const now = new Date();
-        const difference = authInfo.expiresIn.getTime() - now.getTime();
-        if(difference>0){
-            this.token = authInfo.token;
-            // this.isAuthenticated = true;
-            this.authStatusChanged.next(true);
-            this.setAuthTimer(difference);
-        }
+        
     }
 
     private setAuthTimer(duration:number){
