@@ -1,24 +1,63 @@
 const router = require("express").Router();
 const {Post} = require("../models/Post");
+const multer = require("multer");
 
-router.get("/", async(req, res)=>{
-    console.log("get called()");
-    try{
-        const posts = await Post.find();
-        res.send({
-            message: "Posts Fetched!",
-            posts: posts
-        });
-    }catch(err){
-        res.send(err.message);
-    } 
+const MIME_TYPE = {
+    "image/jpg": "jpg",
+    "image/jpeg": "jpg",
+    "image/png": "png"
+}
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb)=>{
+        const isValid = MIME_TYPE[file.mimetype];
+        let error = new Error("Invalid mime type")
+        if(isValid){
+            error = null;
+        }
+        cb(error, "backend/images");
+    },
+    filename: (req, file, cb)=>{
+        const name = file.originalname.toLowerCase().split(' ').join('-');
+        const ext = MIME_TYPE[file.mimetype];
+        cb(null, name + "-" + Date.now() + "." + ext);
+    }
 });
 
-router.post("/", async(req, res)=>{
+router.get("/", async(req, res)=>{
+    const resultsPerPage = +req.query.resultsPerPage;
+    const page = +req.query.page;
+    const postQuery = Post.find();
+    let allPosts;
+
+    if(page && resultsPerPage){
+        postQuery
+            .skip(resultsPerPage * (page - 1 ))
+            .limit(resultsPerPage);
+    }
+
+    postQuery.then((posts)=>{
+        allPosts = posts; 
+        return Post.count();
+    }).then((count)=>{
+        res.send({
+            message: "Posts Fetched!",
+            posts: allPosts,
+            maxPosts: count
+        });
+    });
+});
+
+
+
+router.post("/", multer({storage: storage}).single("image") ,async(req, res)=>{
     
+    let url = req.protocol + "://" + req.get("host");
+
     let post = new Post({
         title: req.body.title,
-        description: req.body.description
+        description: req.body.description,
+        imgPath: url + "/images/" + req.file.filename
     });
     try{
         await post.save();
@@ -47,14 +86,27 @@ router.delete("/:id", async(req, res)=>{
     }
 });
 
-router.put("/:id", async(req, res)=>{
+
+router.put("/:id", multer({storage: storage}).single("image"), async(req, res)=>{
+    
+    let imgPath = req.body.imgPath;
+    let url = req.protocol + "://" + req.get("host");
     let id = req.params.id;
+    
+    if(req.file){
+        imgPath = url + "/images/" + req.file.filename;
+    }
+    
+
     let upPost = {
         title: req.body.title,
-        description: req.body.description
+        description: req.body.description,
+        imgPath: imgPath
     }; 
+    // console.log(upPost);
     try{
-        const post = await Post.findByIdAndUpdate(id, upPost);
+        const post = await Post.findByIdAndUpdate(id, upPost, {new:true});
+        console.log(post);
         res.send({
             message: "Updated Post",
             post: post

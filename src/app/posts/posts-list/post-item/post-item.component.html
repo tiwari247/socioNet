@@ -1,0 +1,22 @@
+<div class="card bg-light mb-3" style="max-width: 100%;">
+  <div class="class-header" [id]="post.id">
+    <h2 class="mb-0">
+      <button (click)="onClickList()" class="btn btn-link" type="button" data-toggle="collapse" [attr.data-target]="'#collapse'+post.id" aria-expanded="true" aria-controls="collapseOne">
+        {{ post.title }}
+      </button>
+    </h2>
+  </div>
+  <div [id]="'collapse'+post.id" [class]="collapse ? 'collapse' : 'collapse show'" aria-labelledby="headingOne" data-parent="#accordionExample">
+    <div class="card-body">
+      <!-- <h5 class="card-title">{{ post.title }}</h5> -->
+      <p class="card-text">{{ post.description }}</p>
+    </div>
+    <div class="image-list">
+      <img class="image-responsive" [src]="post.imgPath" [alt]="post.title" >
+    </div>
+    <div class="card-footer">
+      <button class="btn btn-success" *ngIf="isAuthenticated" (click)="onEdit(index)" >Edit</button>&nbsp;
+      <button class="btn btn-danger" *ngIf="isAuthenticated" (click)="onDelete(index)">Delete</button>
+    </div>
+  </div>
+</div>

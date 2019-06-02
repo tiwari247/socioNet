@@ -9,6 +9,15 @@
       <li class="nav-item">
         <a class="nav-link" routerLink="/create" routerLinkActive="active">New Post <span class="sr-only">(current)</span></a>
       </li>
+      <li class="nav-item">
+          <a class="nav-link" *ngIf="!isAuthenticated" routerLink="/signup" routerLinkActive="active">Register <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" *ngIf="!isAuthenticated" routerLink="/signin" routerLinkActive="active">Login <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+          <button class="btn btn-primary" *ngIf="isAuthenticated" (click)="onLogout()">Logout</button>
+      </li>
       <!-- <li class="nav-item">
         <a class="nav-link" href="#">Link</a>
       </li>

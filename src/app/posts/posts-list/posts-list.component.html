@@ -2,14 +2,12 @@
     <span class="sr-only">Loading...</span>
   </div>
 <div *ngIf="!isLoading">
-  <div class="card bg-light mb-3" style="max-width: 100%;" *ngFor="let post of posts; let i = index">
-  <div class="card-body">
-    <h5 class="card-title">{{ post.title }}</h5>
-    <p class="card-text">{{ post.description }}</p>
+  <div class="accordion" id="accordionExample">
+    <app-post-item  *ngFor="let post of posts; let i = index" [resultsPerPage]="resultsPerPage" [currentPage]="currentPage" [post]=post [index]="i" ></app-post-item>
+  </div>  
+  <div *ngIf="resultsPerPage < postLength" >
+    <app-paginator [posts]="posts" [postLength]="postLength" [resultsPerPage]="resultsPerPage" *ngIf="posts"></app-paginator>
   </div>
-  <div class="card-footer">
-    <button class="btn btn-success" (click)="onEdit(i)">Edit</button>&nbsp;
-    <button class="btn btn-danger" (click)="onDelete(i)">Delete</button>
-  </div>
-</div>
+  
+  
 </div>

@@ -9,30 +9,27 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./posts-list.component.css']
 })
 export class PostsListComponent implements OnInit {
-  isLoading = true;
+  // isLoading = true;
   posts:Post[];
+  // collapse = true;
+  postLength:number;
+  resultsPerPage=4;
+  currentPage = 1;
   constructor(private postService:PostService, private router:Router) { }
 
   ngOnInit() {
     // this.posts = 
     // console.log("post list initialized");
-    this.postService.getPosts();
+    this.postService.getPosts(this.resultsPerPage,this.currentPage);
 
-    this.postService.postsChanged.subscribe((posts)=>{
-      this.posts = posts;
-      this.isLoading = false;
+    this.postService.postsChanged.subscribe((postData)=>{
+      console.log(postData);
+      this.posts = postData.posts;
+      this.postLength = postData.postsLength
     });
 
   }
 
-  onEdit(index:number){
-    // console.log(index);
-    this.router.navigate(["/edit", index]);
-  }
-
-  onDelete(index:number){
-    console.log(index);
-    this.postService.removePost(+index);
-  }
+  
 
 }

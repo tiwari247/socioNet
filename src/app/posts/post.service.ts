@@ -12,7 +12,7 @@ export class PostService{
         // {title: "Title2", description: "Description Description"}
     ];
 
-    postsChanged = new Subject<Post[]>();
+    postsChanged = new Subject<{posts: Post[], postsLength:number}>();
 
     constructor(private http: HttpClient, private router:Router){}
 
@@ -20,55 +20,81 @@ export class PostService{
         return this.posts[index];
     }
 
-    getPosts(){
+    getPosts(postsPerPage, currentPage){
+        let queryParams = `?resultsPerPage=${postsPerPage}&page=${currentPage}`;
         console.log("Inside getPosts()");
-        this.http.get<{message: string, posts: any}>("http://localhost:3000/api/posts")
+        this.http.get<{message: string, posts: any, maxPosts: number}>("http://localhost:3000/api/posts"+queryParams)
             .pipe(map((postsData)=>{
-                return postsData.posts.map((post)=>{
-                    return {
-                        title: post.title,
-                        description: post.description,
-                        id: post._id
-                    };
-                });
+                return {
+                    posts: postsData.posts.map((post)=>{
+                        return {
+                            title: post.title,
+                            description: post.description,
+                            id: post._id,
+                            imgPath: post.imgPath
+                        };
+                    }),
+                    maxPosts: postsData.maxPosts
+                };
             }))
-            .subscribe((posts)=>{
+            .subscribe((tranformedPostData)=>{
                 console.log("Inside getPosts() http");
-                this.posts = posts;
-                this.postsChanged.next(this.posts.slice());
+                this.posts = tranformedPostData.posts;
+                this.postsChanged.next({posts: this.posts.slice(), postsLength: +tranformedPostData.maxPosts});
                 console.dir(this.posts);
             });
         // return this.posts.slice();
     }
 
-    addPosts(post: Post){
-        this.http.post<{message:string, post: Post}>("http://localhost:3000/api/posts", post)
+    addPosts(post: Post, file){
+        let formData = new FormData();
+        formData.append("title", post.title);
+        formData.append("description", post.description);
+        formData.append("image", file, post.title);
+        this.http.post<{message:string, post: Post}>("http://localhost:3000/api/posts", formData)
             .subscribe((response)=>{
-                this.posts.push(post);
-                this.postsChanged.next(this.posts.slice());
+                // this.posts.push(post);
+                // this.postsChanged.next(this.posts.slice());
                 this.router.navigate(["/"]);
             });
     }
 
     removePost(index: number){
         let id = this.posts[index].id;
-        this.http.delete<{message:string, post:Post}>("http://localhost:3000/api/posts/"+id)
-            .subscribe(()=>{
-                this.posts.splice(index,1);
-                this.postsChanged.next(this.posts.slice());
-            });
+        return this.http.delete<{message:string, post:Post}>("http://localhost:3000/api/posts/"+id);
+            // .subscribe(()=>{
+            //     this.posts.splice(index,1);
+            //     this.postsChanged.next({posts: this.posts.slice(), postsLength: 1});
+            // });
     }
 
-    updatePost(index:number, post:Post){
+    updatePost(index:number, post:Post, file: string|File){
+        let newPost:Post|FormData;
+        if(typeof(file) === "object"){
+            newPost = new FormData();
+            newPost.append("id", post.id);
+            newPost.append("title", post.title);
+            newPost.append("description", post.description);
+            newPost.append("image", file, post.title);
+        }else{
+            newPost = {
+                id: post.id,
+                title: post.title,
+                description: post.description,
+                imgPath: file
+            }
+        }
         let id = this.posts[index].id;
-        this.http.put<{message:string, post: Post}>("http://localhost:3000/api/posts/"+id, post)
+        this.http.put<{message:string, post: Post}>("http://localhost:3000/api/posts/"+id, newPost)
             .subscribe((response)=>{
-                this.posts[index] = {
-                    id: response.post.id,
-                    title: response.post.title,
-                    description: response.post.description
-                };
-                this.postsChanged.next(this.posts.slice());
+                // this.posts[index] = {
+                //     id: response.post.id,
+                //     title: response.post.title,
+                //     description: response.post.description,
+                //     imgPath: response.post.imgPath
+                // };
+                // console.log(response);
+                // this.postsChanged.next(this.posts.slice());
                 this.router.navigate(["/"]);
             });
     }

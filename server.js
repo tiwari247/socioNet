@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 
 const app = express();
 const posts = require("./backend/routes/posts");
+const users = require("./backend/routes/users");
 
 mongoose.connect("mongodb://localhost/socioNet")
     .then(()=>{
@@ -11,6 +12,7 @@ mongoose.connect("mongodb://localhost/socioNet")
         console.log("Errori: "+err);
     });
 
+app.use('/images',express.static(__dirname + "/backend/images"));
 app.use((req, res, next)=>{
     res.header('Access-Control-Allow-Origin', "*");
     res.header('Access-Control-Allow-Headers', "Content-Type, Accept, Origin, X-Requested-With");
@@ -19,6 +21,7 @@ app.use((req, res, next)=>{
 });
 app.use(express.json());
 app.use('/api/posts', posts);
+app.use('/api/users', users);
 
 //
 app.get("/", (req, res)=>{

@@ -16,16 +16,17 @@ export class PostsCreateComponent implements OnInit{
     postId;
     isLoading = true;
     imagePreview;
-
+    form: FormGroup;
+    
     constructor(private postService: PostService, 
         private activatedRoute: ActivatedRoute,
         private router: Router){}
-        private form: FormGroup;
 
     ngOnInit(){
         this.form = new FormGroup({
             title: new FormControl(null, {validators: [Validators.required]}),
-            description: new FormControl(null, {validators: [Validators.required]})
+            description: new FormControl(null, {validators: [Validators.required]}),
+            image: new FormControl(null, {validators: [Validators.required]}),
         });
         this.activatedRoute.paramMap.subscribe((paramsMap: ParamMap)=>{
             if(paramsMap.has("id")){
@@ -34,12 +35,13 @@ export class PostsCreateComponent implements OnInit{
                 console.log(this.mode + "-" + this.postId);
                 this.post = this.postService.getPost(+this.postId);
                 this.form.setValue({
-                    title: this.form.get('title').value,
-                    description: this.form.get('description').value
+                    title: this.post.title,
+                    description: this.post.description,
+                    image: this.post.imgPath
                 });
                 this.isLoading = false;
             }else{
-                this.post = new Post("","","");
+                this.post = new Post("","","", "");
                 this.mode = "create";
                 console.log(this.mode);
                 this.isLoading = false;
@@ -48,15 +50,23 @@ export class PostsCreateComponent implements OnInit{
     }
 
     onCreate(){
+        if(this.form.invalid){
+            return;
+        }
+
         this.isLoading = true;
+        let post:Post = {
+            id: null,
+            title: this.form.value.title,
+            description: this.form.value.description,
+            imgPath: null
+        };
         if(this.mode === "create"){    
-            this.post = new Post(null, this.form.value.title, this.form.value.description); 
-            console.log(this.post);
-            this.postService.addPosts(this.post);
+            console.log(post);
+            this.postService.addPosts(post, this.form.value.image);
             this.isLoading = false;
         }else{
-            this.post = new Post(null, this.form.value.title, this.form.value.description); 
-            this.postService.updatePost(this.postId, this.post);
+            this.postService.updatePost(this.postId, post, this.form.value.image);
             this.isLoading = false;
         }
         this.form.reset();
@@ -64,17 +74,15 @@ export class PostsCreateComponent implements OnInit{
 
     onImagePicked(event: Event){
         const file = (event.target as HTMLInputElement).files[0];
-        console.log(file);
-
+        this.form.patchValue({
+            image: file
+        });
+        
         const reader = new FileReader();
 
         reader.onload = ()=>{
             this.imagePreview = reader.result;
-            console.log(this.imagePreview);
         };
-
         reader.readAsDataURL(file);
-
-        
     }
 }

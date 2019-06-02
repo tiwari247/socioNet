@@ -1,0 +1,9 @@
+.image-list{
+    padding: 20px;
+    max-width: 300px;
+}
+
+.image-list img{
+    width: 100%;
+    box-shadow: 1px 1px 1px #efefef;
+}

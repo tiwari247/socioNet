@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from "@angular/forms"
+import { ReactiveFormsModule, FormsModule } from "@angular/forms"
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
@@ -16,6 +16,11 @@ import { MatMenuItemBase } from '@angular/material/menu/typings/menu-item';
 import { DataService } from './header-dropdown/data.service';
 import { MainmenuComponent } from './header-dropdown/mainmenu/mainmenu.component';
 import { SubmenuComponent } from './header-dropdown/mainmenu/submenu/submenu.component';
+import { PostItemComponent } from './posts/posts-list/post-item/post-item.component';
+import { PaginatorComponent } from './shared/paginator/paginator.component';
+import { SignupComponent } from './auth/signup/signup.component';
+import { SigninComponent } from './auth/signin/signin.component';
+import { AuthService } from './auth/auth.service';
 
 @NgModule({
   declarations: [
@@ -25,11 +30,16 @@ import { SubmenuComponent } from './header-dropdown/mainmenu/submenu/submenu.com
     PostsListComponent,
     HeaderDropdownComponent,
     MainmenuComponent,
-    SubmenuComponent
+    SubmenuComponent,
+    PostItemComponent,
+    PaginatorComponent,
+    SignupComponent,
+    SigninComponent
   ],
   imports: [
     BrowserModule,
     ReactiveFormsModule,
+    FormsModule,
     HttpClientModule,
     AppRoutingModule,
     BrowserAnimationsModule,
@@ -37,7 +47,7 @@ import { SubmenuComponent } from './header-dropdown/mainmenu/submenu/submenu.com
     MatMenuModule,
     MatIconModule
   ],
-  providers: [PostService, DataService],
+  providers: [PostService, DataService, AuthService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

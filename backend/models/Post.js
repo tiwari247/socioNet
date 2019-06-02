@@ -9,6 +9,9 @@ const postSchema = mongoose.Schema({
     description: {
         type: String,
         required: true
+    },
+    imgPath: {
+        type: String
     }
 });
 

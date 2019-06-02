@@ -1,0 +1,5 @@
+<nav aria-label="Page navigation example">
+  <ul class="pagination">
+    <li [class]="i+1===currentPage? 'page-item active' : 'page-item'" *ngFor="let item of pagesArr; let i=index" (click)="onClick(i+1)"><a class="page-link" href="#">{{ i+1 }}</a></li>
+  </ul>
+</nav>
