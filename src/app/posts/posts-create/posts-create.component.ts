@@ -41,7 +41,7 @@ export class PostsCreateComponent implements OnInit{
                 });
                 this.isLoading = false;
             }else{
-                this.post = new Post("","","", "");
+                this.post = new Post("","","", "", "");
                 this.mode = "create";
                 console.log(this.mode);
                 this.isLoading = false;
@@ -59,7 +59,8 @@ export class PostsCreateComponent implements OnInit{
             id: null,
             title: this.form.value.title,
             description: this.form.value.description,
-            imgPath: null
+            imgPath: null,
+            creater: null
         };
         if(this.mode === "create"){    
             console.log(post);

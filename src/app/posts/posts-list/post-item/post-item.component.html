@@ -15,8 +15,8 @@
       <img class="image-responsive" [src]="post.imgPath" [alt]="post.title" >
     </div>
     <div class="card-footer">
-      <button class="btn btn-success" *ngIf="isAuthenticated" (click)="onEdit(index)" >Edit</button>&nbsp;
-      <button class="btn btn-danger" *ngIf="isAuthenticated" (click)="onDelete(index)">Delete</button>
+      <button class="btn btn-success" *ngIf="isAuthenticated && post.creater === userId" (click)="onEdit(index)" >Edit</button>&nbsp;
+      <button class="btn btn-danger" *ngIf="isAuthenticated && post.creater === userId" (click)="onDelete(index)">Delete</button>
     </div>
   </div>
 </div>

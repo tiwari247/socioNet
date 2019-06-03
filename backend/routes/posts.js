@@ -52,14 +52,15 @@ router.get("/", async(req, res)=>{
 
 router.post("",)
 router.post("/", auth, multer({storage: storage}).single("image") ,async(req, res)=>{
-    
+    const userId = req.user.id;
+    // console.log("Inside POST: "+);
     let url = req.protocol + "://" + req.get("host");
 
     let post = new Post({
         title: req.body.title,
         description: req.body.description,
         imgPath: url + "/images/" + req.file.filename,
-        creater: req.body.userId
+        creater: userId
     });
     try{
         await post.save();
@@ -73,15 +74,21 @@ router.post("/", auth, multer({storage: storage}).single("image") ,async(req, re
 });
 
 router.delete("/:id", auth, async(req, res)=>{
-    
+    const userId = req.user.id;
+    console.log(userId);
     let id = req.params.id;
-    console.log(id);
     try{
-        post = await Post.findByIdAndDelete(id);
-        res.send({
-            message: "Deleted Post!",
-            post: post
-        });
+        post = await Post.findOneAndDelete({_id:id, creater:userId});
+        console.log(post);
+        if(post){
+            res.send({
+                message: "Deleted Post!",
+                post: post
+            });
+        }else{
+            res.status(401).send("Not Authorized!");
+        }
+        
     }catch(err){
         res.send(err.message);
         // console.log(err.message);
@@ -90,29 +97,34 @@ router.delete("/:id", auth, async(req, res)=>{
 
 
 router.put("/:id", auth, multer({storage: storage}).single("image"), async(req, res)=>{
-    
+    const userId = req.user.id;
+    console.log(userId); 
     let imgPath = req.body.imgPath;
     let url = req.protocol + "://" + req.get("host");
     let id = req.params.id;
     
     if(req.file){
         imgPath = url + "/images/" + req.file.filename;
-    }
-    
+    }  
 
     let upPost = {
         title: req.body.title,
         description: req.body.description,
-        imgPath: imgPath
+        imgPath: imgPath,
+        creater: req.body.creater
     }; 
     // console.log(upPost);
     try{
-        const post = await Post.findByIdAndUpdate(id, upPost, {new:true});
+        const post = await Post.findOneAndUpdate({_id:id, creater:userId}, upPost, {new:true});
         console.log(post);
-        res.send({
-            message: "Updated Post",
-            post: post
-        });
+        if(post){
+            res.send({
+                message: "Updated Post",
+                post: post
+            });
+        }else{
+            res.status(401).send("Not Authorized");
+        }
     }catch(err){
         res.send(err.message);
     }  

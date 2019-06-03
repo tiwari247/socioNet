@@ -8,7 +8,7 @@ import { map } from "rxjs/operators";
 @Injectable()
 export class PostService{
     posts: Post[] = [
-        // {title: "Title1", description: "Description Description"},
+        // {title: "Title1", description: "Description Description", id, imgPath, creater},
         // {title: "Title2", description: "Description Description"}
     ];
 
@@ -31,7 +31,8 @@ export class PostService{
                             title: post.title,
                             description: post.description,
                             id: post._id,
-                            imgPath: post.imgPath
+                            imgPath: post.imgPath,
+                            creater: post.creater
                         };
                     }),
                     maxPosts: postsData.maxPosts
@@ -51,6 +52,7 @@ export class PostService{
         formData.append("title", post.title);
         formData.append("description", post.description);
         formData.append("image", file, post.title);
+        formData.append("creater", localStorage.getItem("userId"))
         this.http.post<{message:string, post: Post}>("http://localhost:3000/api/posts", formData, {
             headers: new HttpHeaders().append("auth", localStorage.getItem("token"))
         })
@@ -64,7 +66,9 @@ export class PostService{
 
     removePost(index: number){
         let id = this.posts[index].id;
-        return this.http.delete<{message:string, post:Post}>("http://localhost:3000/api/posts/"+id);
+        return this.http.delete<{message:string, post:Post}>("http://localhost:3000/api/posts/"+id,{
+            headers: new HttpHeaders().append("auth", localStorage.getItem("token"))
+        });
             // .subscribe(()=>{
             //     this.posts.splice(index,1);
             //     this.postsChanged.next({posts: this.posts.slice(), postsLength: 1});
@@ -84,11 +88,14 @@ export class PostService{
                 id: post.id,
                 title: post.title,
                 description: post.description,
-                imgPath: file
+                imgPath: file,
+                creater: localStorage.getItem("userId")//
             }
         }
         let id = this.posts[index].id;
-        this.http.put<{message:string, post: Post}>("http://localhost:3000/api/posts/"+id, newPost)
+        this.http.put<{message:string, post: Post}>("http://localhost:3000/api/posts/"+id, newPost, {
+            headers: new HttpHeaders().append("auth", localStorage.getItem("token"))
+        })
             .subscribe((response)=>{
                 // this.posts[index] = {
                 //     id: response.post.id,
@@ -99,6 +106,8 @@ export class PostService{
                 // console.log(response);
                 // this.postsChanged.next(this.posts.slice());
                 this.router.navigate(["/"]);
+            }, (err)=>{
+                console.log(err);
             });
     }
 

@@ -15,6 +15,7 @@ export class PostItemComponent implements OnInit, OnDestroy {
   @Input() index:number;
   @Input() resultsPerPage:number;
   @Input() currentPage:number;
+  userId;
   collapse = true;
   isAuthenticated = false;
   subscription:Subscription;
@@ -24,11 +25,19 @@ export class PostItemComponent implements OnInit, OnDestroy {
     private authService:AuthService) { }
 
   ngOnInit() {
+    this.userId = this.authService.getUserId();
     console.log("PostItem-isAuth: "+this.authService.isAuthenticated())
+    console.log("PostItem-userId: "+this.authService.getUserId())
     this.isAuthenticated =  this.authService.isAuthenticated();
     this.subscription = this.authService.getAuthStatusChanged()
       .subscribe((isAuth)=>{
         this.isAuthenticated = isAuth;
+        // this.userId = this.authService.getUserId();
+      });
+      this.postService.postsChanged.subscribe((postData)=>{
+        console.log(postData.posts);
+        // this.posts = postData.posts;
+        // this.postLength = postData.postsLength
       });
   }
 
@@ -43,8 +52,10 @@ export class PostItemComponent implements OnInit, OnDestroy {
 
   onDelete(index:number){
     console.log(index);
-    this.postService.removePost(+index).subscribe(()=>{
+    this.postService.removePost(+index).subscribe((response)=>{ 
       this.postService.getPosts(this.resultsPerPage,this.currentPage);   
+    }, (err)=>{
+      console.log(err);
     });
   }
 
