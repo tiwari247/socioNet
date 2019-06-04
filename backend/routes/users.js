@@ -23,7 +23,10 @@ router.post("/register", async(req, res)=>{
             });
         })
         .catch((err)=>{
-            res.send(err.message);
+            res.status(400).send({
+                message: "Something went wrong!",
+                error: err.message
+            });
         });
 
 });
@@ -33,14 +36,20 @@ router.post("/login", async(req, res)=>{
     User.findOne({email})
         .then((user)=>{
             if(!user){
-                return res.status(401).send("Wrong Email or Password!");
+                return res.status(401).send({
+                    message: "Something went wrong!",
+                    error: "Invalid username and password"
+                });
             }
 
             bcrypt.compare(req.body.password, user.password)
                 .then((isValid)=>{        
                     console.log(isValid);
                     if(!isValid){
-                        return res.status(401).send("Wrong Email or Password!");
+                        return res.status(401).send({
+                            message: "Something went wrong!",
+                            error: "Invalid username and password"
+                        });
                     }
                     const token = jwt.sign({
                         id: user.id,
@@ -59,7 +68,10 @@ router.post("/login", async(req, res)=>{
         })
         .catch((err)=>{
             console.log(err);
-            res.status(401).send("Wrong Email or Password!");
+            res.status(401).send({
+                message: "Something went wrong!",
+                error: err.message
+            });
         });
 });
 

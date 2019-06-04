@@ -26,8 +26,8 @@ export class PostItemComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.userId = this.authService.getUserId();
-    console.log("PostItem-isAuth: "+this.authService.isAuthenticated())
-    console.log("PostItem-userId: "+this.authService.getUserId())
+    // console.log("PostItem-isAuth: "+this.authService.isAuthenticated())
+    // console.log("PostItem-userId: "+this.authService.getUserId())
     this.isAuthenticated =  this.authService.isAuthenticated();
     this.subscription = this.authService.getAuthStatusChanged()
       .subscribe((isAuth)=>{
@@ -35,7 +35,7 @@ export class PostItemComponent implements OnInit, OnDestroy {
         // this.userId = this.authService.getUserId();
       });
       this.postService.postsChanged.subscribe((postData)=>{
-        console.log(postData.posts);
+        // console.log(postData.posts);
         // this.posts = postData.posts;
         // this.postLength = postData.postsLength
       });

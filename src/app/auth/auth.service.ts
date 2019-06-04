@@ -29,8 +29,8 @@ export class AuthService{
 
     isAuthenticated(){
         // return this.token?true:false ;
-        console.log("isAuthenticated:AuthService: "+(localStorage.getItem("token")?true:false));
-        console.log("isAuthenticated:AuthService:token "+localStorage.getItem("token"));
+        // console.log("isAuthenticated:AuthService: "+(localStorage.getItem("token")?true:false));
+        // console.log("isAuthenticated:AuthService:token "+localStorage.getItem("token"));
         
         return localStorage.getItem("token")?true:false ;
     }
@@ -70,12 +70,12 @@ export class AuthService{
 
     autoAuthUser(){
         const authInfo = this.getAuthData();
-        console.log(authInfo);
+        // console.log(authInfo);
         if(authInfo){
-            console.log("inside authInfo log");
+            // console.log("inside authInfo log");
             const now = new Date();
             const difference = authInfo.expiresIn.getTime() - now.getTime();
-            console.log(difference);
+            // console.log(difference);
             if(difference>0){
                 this.token = authInfo.token;
         //         // this.isAuthenticated = true;
@@ -119,7 +119,7 @@ export class AuthService{
         const token = localStorage.getItem("token");
         const expiresIn = localStorage.getItem("expiresIn");
         const userId = localStorage.getItem("userId");
-        console.log("getAuthData(): "+token,expiresIn,userId);
+        // console.log("getAuthData(): "+token,expiresIn,userId);
         if(!token||!expiresIn){
             return;
         }

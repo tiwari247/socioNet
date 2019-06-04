@@ -53,9 +53,7 @@ export class PostService{
         formData.append("description", post.description);
         formData.append("image", file, post.title);
         formData.append("creater", localStorage.getItem("userId"))
-        this.http.post<{message:string, post: Post}>("http://localhost:3000/api/posts", formData, {
-            headers: new HttpHeaders().append("auth", localStorage.getItem("token"))
-        })
+        this.http.post<{message:string, post: Post}>("http://localhost:3000/api/posts", formData)
             .subscribe((response)=>{
                 // this.posts.push(post);
                 // this.postsChanged.next(this.posts.slice());
@@ -66,9 +64,7 @@ export class PostService{
 
     removePost(index: number){
         let id = this.posts[index].id;
-        return this.http.delete<{message:string, post:Post}>("http://localhost:3000/api/posts/"+id,{
-            headers: new HttpHeaders().append("auth", localStorage.getItem("token"))
-        });
+        return this.http.delete<{message:string, post:Post}>("http://localhost:3000/api/posts/"+id);
             // .subscribe(()=>{
             //     this.posts.splice(index,1);
             //     this.postsChanged.next({posts: this.posts.slice(), postsLength: 1});
@@ -93,9 +89,7 @@ export class PostService{
             }
         }
         let id = this.posts[index].id;
-        this.http.put<{message:string, post: Post}>("http://localhost:3000/api/posts/"+id, newPost, {
-            headers: new HttpHeaders().append("auth", localStorage.getItem("token"))
-        })
+        this.http.put<{message:string, post: Post}>("http://localhost:3000/api/posts/"+id, newPost)
             .subscribe((response)=>{
                 // this.posts[index] = {
                 //     id: response.post.id,

@@ -32,7 +32,7 @@ export class PostsCreateComponent implements OnInit{
             if(paramsMap.has("id")){
                 this.mode = "edit";
                 this.postId = paramsMap.get("id");
-                console.log(this.mode + "-" + this.postId);
+                // console.log(this.mode + "-" + this.postId);
                 this.post = this.postService.getPost(+this.postId);
                 this.form.setValue({
                     title: this.post.title,
@@ -43,7 +43,7 @@ export class PostsCreateComponent implements OnInit{
             }else{
                 this.post = new Post("","","", "", "");
                 this.mode = "create";
-                console.log(this.mode);
+                // console.log(this.mode);
                 this.isLoading = false;
             }
         });

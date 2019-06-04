@@ -69,7 +69,10 @@ router.post("/", auth, multer({storage: storage}).single("image") ,async(req, re
             post: post
         });
     }catch(err){
-        res.send(err.message);
+        res.status(500).send({
+            message: "Something went wrong!",
+            error: err.message
+        });
     }
 });
 
@@ -86,11 +89,17 @@ router.delete("/:id", auth, async(req, res)=>{
                 post: post
             });
         }else{
-            res.status(401).send("Not Authorized!");
+            res.status(401).send({
+                message: "Not Authorized",
+                error: "Not Authorized"
+            });
         }
         
     }catch(err){
-        res.send(err.message);
+        res.status(500).send({
+            message: "Something went wrong!",
+            error: err.message
+        });
         // console.log(err.message);
     }
 });
@@ -123,10 +132,16 @@ router.put("/:id", auth, multer({storage: storage}).single("image"), async(req, 
                 post: post
             });
         }else{
-            res.status(401).send("Not Authorized");
+            res.status(401).send({
+                message: "Not Authorized",
+                error: "Not Authorized"
+            });
         }
     }catch(err){
-        res.send(err.message);
+        res.status(500).send({
+            message: "Something went wrong!",
+            error: err.message
+        });
     }  
 });
 

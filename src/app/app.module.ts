@@ -7,12 +7,11 @@ import { HeaderComponent } from './header/header.component';
 import { PostsCreateComponent } from './posts/posts-create/posts-create.component';
 import { PostsListComponent } from './posts/posts-list/posts-list.component';
 import { PostService } from './posts/post.service';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { HeaderDropdownComponent } from './header-dropdown/header-dropdown.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatToolbarModule, MatMenuModule, MatIconModule } from "@angular/material";
-import { MatMenuItemBase } from '@angular/material/menu/typings/menu-item';
+import { MatToolbarModule, MatMenuModule, MatIconModule, MatDialogModule } from "@angular/material";
 import { DataService } from './header-dropdown/data.service';
 import { MainmenuComponent } from './header-dropdown/mainmenu/mainmenu.component';
 import { SubmenuComponent } from './header-dropdown/mainmenu/submenu/submenu.component';
@@ -21,6 +20,9 @@ import { PaginatorComponent } from './shared/paginator/paginator.component';
 import { SignupComponent } from './auth/signup/signup.component';
 import { SigninComponent } from './auth/signin/signin.component';
 import { AuthService } from './auth/auth.service';
+import { AuthInterceptor } from './auth/auth-interceptor';
+import { ErrorComponent } from './error.component';
+import { ErrorInterceptor } from './error.interceptor';
 
 @NgModule({
   declarations: [
@@ -34,7 +36,8 @@ import { AuthService } from './auth/auth.service';
     PostItemComponent,
     PaginatorComponent,
     SignupComponent,
-    SigninComponent
+    SigninComponent,
+    ErrorComponent
   ],
   imports: [
     BrowserModule,
@@ -45,9 +48,17 @@ import { AuthService } from './auth/auth.service';
     BrowserAnimationsModule,
     MatToolbarModule,
     MatMenuModule,
-    MatIconModule
+    MatIconModule,
+    MatDialogModule
   ],
-  providers: [PostService, DataService, AuthService],
-  bootstrap: [AppComponent]
+  providers: [
+    PostService, 
+    DataService, 
+    AuthService, 
+    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true}
+  ],
+  bootstrap: [AppComponent],
+  entryComponents: [ErrorComponent]
 })
 export class AppModule { }

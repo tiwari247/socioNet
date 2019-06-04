@@ -26,7 +26,7 @@ export class PostsListComponent implements OnInit {
     this.postService.getPosts(this.resultsPerPage,this.currentPage);
 
     this.postService.postsChanged.subscribe((postData)=>{
-      console.log("postslist:postData"+postData);
+      // console.log("postslist:postData"+postData);
       this.posts = postData.posts;
       this.postLength = postData.postsLength
     });
