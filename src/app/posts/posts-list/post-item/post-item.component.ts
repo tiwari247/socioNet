@@ -47,7 +47,7 @@ export class PostItemComponent implements OnInit, OnDestroy {
 
   onEdit(index:number){
     // console.log(index);
-    this.router.navigate(["/edit", index]);
+    this.router.navigate(["/post","/edit", index]);
   }
 
   onDelete(index:number){
