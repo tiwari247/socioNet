@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { User } from './user.model';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { routerNgProbeToken } from '@angular/router/src/router_module';
 
 @Injectable()
 export class AuthService{
@@ -65,6 +66,7 @@ export class AuthService{
         this.http.post("http://localhost:3000/api/users/register", {email, password})
             .subscribe((response)=>{
                 console.log(response);
+                this.router.navigate(["/signin"]);
             });
     }
 

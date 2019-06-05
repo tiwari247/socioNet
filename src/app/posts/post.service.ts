@@ -59,7 +59,7 @@ export class PostService{
                 // this.postsChanged.next(this.posts.slice());
                 // console.log("Response: "+response);
                 this.router.navigate(["/"]);
-            }, (err)=>{console.log(err)});
+            });
     }
 
     removePost(index: number){
@@ -100,8 +100,6 @@ export class PostService{
                 // console.log(response);
                 // this.postsChanged.next(this.posts.slice());
                 this.router.navigate(["/"]);
-            }, (err)=>{
-                console.log(err);
             });
     }
 
